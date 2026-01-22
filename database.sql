@@ -72,4 +72,18 @@ CREATE TABLE IF NOT EXISTS `custom_field_values` (
 
 -- Default Admin
 INSERT IGNORE INTO `users` (`username`, `password`, `role`, `first_name`, `last_name`, `email`) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'System', 'Admin', 'admin@addressbook.com');
+('admin', 'admin', 'admin', 'System', 'Admin', 'admin@addressbook.com');
+
+-- Trigger to protect admin
+DROP TRIGGER IF EXISTS `prevent_admin_delete`;
+DELIMITER //
+CREATE TRIGGER `prevent_admin_delete`
+BEFORE DELETE ON `users`
+FOR EACH ROW
+BEGIN
+    IF OLD.username = 'admin' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete admin user! This account is protected.';
+    END IF;
+END;
+//
+DELIMITER ;

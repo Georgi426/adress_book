@@ -13,9 +13,10 @@ class User
     public function register($username, $password, $first_name, $last_name, $email, $role = 'client')
     {
         try {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            // WARNING: Storing passwords in plain text as requested by user.
+            // NOT RECOMMENDED FOR PRODUCTION ENVIRONMENTS.
             $stmt = $this->pdo->prepare("INSERT INTO users (username, password, first_name, last_name, email, role) VALUES (?, ?, ?, ?, ?, ?)");
-            $result = $stmt->execute([$username, $hashed_password, $first_name, $last_name, $email, $role]);
+            $result = $stmt->execute([$username, $password, $first_name, $last_name, $email, $role]);
 
             if ($result) {
                 // Registration successful
@@ -35,7 +36,8 @@ class User
             $stmt->execute([$username]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
+            // Verify plain text password
+            if ($user && $password === $user['password']) {
                 return $user;
             }
             return false;
@@ -65,6 +67,15 @@ class User
     public function delete($id)
     {
         try {
+            // Protect admin account from deletion
+            $check = $this->pdo->prepare("SELECT username FROM users WHERE id = ?");
+            $check->execute([$id]);
+            $user = $check->fetch();
+
+            if ($user && $user['username'] === 'admin') {
+                return false; // Cannot delete admin
+            }
+
             $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
             return $stmt->execute([$id]);
         } catch (PDOException $e) {
