@@ -21,16 +21,19 @@ require_once __DIR__ . '/../config/db.php';
     <header>
         <div class="container">
             <div class="logo">
-                <a href="index.php"><i class="fas fa-truck-moving"></i> Logistics Co.</a>
+                <a href="index.php"><i class="fas fa-address-book"></i> Address Book</a>
             </div>
             <div class="menu-toggle" onclick="toggleMenu()">
                 <i class="fas fa-bars"></i>
             </div>
             <nav id="nav-menu">
                 <ul>
-
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <li><a href="dashboard.php">Табло</a></li>
+                        <li><a href="dashboard.php">Контакти</a></li>
+                        <li><a href="tags.php">Етикети</a></li>
+                        <li><a href="custom_fields.php">Полета</a></li>
+                        <li><a href="reports.php">Справки</a></li>
+                        <li><a href="profile.php">Профил</a></li>
                         <li><a href="logout.php">Изход (<?= htmlspecialchars($_SESSION['username']) ?>)</a></li>
                     <?php else: ?>
                         <li><a href="login.php">Вход</a></li>

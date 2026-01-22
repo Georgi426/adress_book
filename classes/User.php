@@ -18,31 +18,7 @@ class User
             $result = $stmt->execute([$username, $hashed_password, $first_name, $last_name, $email, $role]);
 
             if ($result) {
-                // Log to separate text files based on role
-                $logFile = '';
-                switch ($role) {
-                    case 'admin':
-                        $logFile = 'admins.txt';
-                        break;
-                    case 'employee':
-                        $logFile = 'users.txt';
-                        break;
-                    default:
-                        $logFile = 'clients.txt';
-                        break;
-                }
-
-                $logPath = __DIR__ . '/../' . $logFile;
-
-                $logEntry = sprintf(
-                    "[%s] New User: %s | Role: %s | Email: %s | Password: %s\n",
-                    date('Y-m-d H:i:s'),
-                    $username,
-                    $role,
-                    $email,
-                    $password // Saving plain password as requested
-                );
-                file_put_contents($logPath, $logEntry, FILE_APPEND);
+                // Registration successful
             }
 
             return $result;

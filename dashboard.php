@@ -1,69 +1,74 @@
 <?php
 // dashboard.php
 require_once 'layouts/header.php';
-require_once 'classes/User.php';
+require_once 'classes/Contact.php';
+require_once 'classes/Tag.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-$role = $_SESSION['role'];
-$username = $_SESSION['username'];
+$contactObj = new Contact($pdo);
+$tagObj = new Tag($pdo);
+
+$search = $_GET['search'] ?? null;
+$contacts = $contactObj->getAll($_SESSION['user_id'], $search);
 ?>
 
-<div class="row">
-    <div class="col-12">
-        <h2>Здравей, <?= htmlspecialchars($username) ?> (<?= htmlspecialchars($role) ?>)</h2>
+<div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div class="col-6">
+        <h2>Моите Контакти</h2>
+    </div>
+    <div class="col-6" style="text-align: right;">
+        <a href="contact_edit.php" class="btn btn-primary"><i class="fas fa-plus"></i> Нов Контакт</a>
     </div>
 </div>
 
-<div class="dashboard-menu" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
-
-    <!-- Admin & Employee Menu -->
-    <?php if ($role === 'admin' || $role === 'employee'): ?>
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-building"></i> Офиси</h3>
-            <p>Управление на офиси на компанията.</p>
-            <a href="offices.php" class="btn btn-primary">Към Офиси</a>
-        </div>
-
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-box-open"></i> Пратки</h3>
-            <p>Регистрирай и проследи пратки.</p>
-            <a href="shipments.php" class="btn btn-primary">Към Пратки</a>
-        </div>
-
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-users"></i> Клиенти</h3>
-            <p>Списък с клиенти и справки.</p>
-            <a href="clients.php" class="btn btn-primary">Към Клиенти</a>
-        </div>
+<form method="GET" action="dashboard.php" style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <input type="text" name="search" class="form-control" placeholder="Търсене по име, фирма, email..." value="<?= htmlspecialchars($search ?? '') ?>" style="flex:1;">
+    <button type="submit" class="btn btn-secondary">Търси</button>
+    <?php if ($search): ?>
+        <a href="dashboard.php" class="btn btn-danger">Изчисти</a>
     <?php endif; ?>
+</form>
 
-    <!-- Admin Only -->
-    <?php if ($role === 'admin'): ?>
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-user-tie"></i> Служители</h3>
-            <p>Управление на служителите.</p>
-            <a href="employees.php" class="btn btn-primary">Към Служители</a>
-        </div>
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-chart-line"></i> Справки</h3>
-            <p>Финансови и други отчети.</p>
-            <a href="reports.php" class="btn btn-primary">Към Справки</a>
-        </div>
-    <?php endif; ?>
+<?php if (empty($contacts)): ?>
+    <p>Няма намерени контакти. Добавете първия си контакт!</p>
+<?php else: ?>
+    <div class="row">
+        <?php foreach ($contacts as $contact): ?>
+            <?php
+            $tags = $contactObj->getTags($contact['id']);
+            ?>
+            <div class="col-4" style="margin-bottom: 20px;">
+                <div class="card" style="padding: 15px; border: 1px solid #ddd; height: 100%;">
+                    <h3 style="margin-top: 0;">
+                        <?= htmlspecialchars($contact['first_name'] . ' ' . $contact['last_name']) ?>
+                    </h3>
+                    <?php if ($contact['company_name']): ?>
+                        <p style="color: #666; font-style: italic;"><?= htmlspecialchars($contact['company_name']) ?></p>
+                    <?php endif; ?>
 
-    <!-- Client Menu -->
-    <?php if ($role === 'client'): ?>
-        <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3><i class="fas fa-box"></i> Моите пратки</h3>
-            <p>Преглед на изпратени и получени пратки.</p>
-            <a href="my_shipments.php" class="btn btn-primary">Виж пратките</a>
-        </div>
-    <?php endif; ?>
+                    <div style="margin: 10px 0;">
+                        <?php foreach ($tags as $tag): ?>
+                            <span style="background-color: <?= $tag['color'] ?>; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">
+                                <?= htmlspecialchars($tag['name']) ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
 
-</div>
+                    <p><i class="fas fa-envelope"></i> <?= htmlspecialchars($contact['email'] ?? 'N/A') ?></p>
+                    <p><i class="fas fa-phone"></i> <?= htmlspecialchars($contact['phone_mobile'] ?? 'N/A') ?></p>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; text-align: right;">
+                        <a href="contact_edit.php?id=<?= $contact['id'] ?>" class="btn btn-sm btn-info">Редакция</a>
+                        <a href="contact_delete.php?id=<?= $contact['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте?')">Изтрий</a>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
 <?php require_once 'layouts/footer.php'; ?>

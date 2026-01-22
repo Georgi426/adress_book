@@ -1,1 +1,0 @@
-[2026-01-09 15:35:47] New User: Georgi234 | Role: employee | Email: george.iliev@mail.com | Password: 123456789

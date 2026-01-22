@@ -1,14 +1,9 @@
--- Database: `logistics_company`
+-- Database: `logistics_company` (renamed to Address Book context effectively)
 
 CREATE DATABASE IF NOT EXISTS `logistics_company` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `logistics_company`;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
+-- Users Table
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
@@ -21,56 +16,60 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `users`
--- (Default Admin: admin / admin123)
---
+-- Contacts Table
+CREATE TABLE IF NOT EXISTS `contacts` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `first_name` VARCHAR(100) NOT NULL,
+    `last_name` VARCHAR(100) NOT NULL,
+    `company_name` VARCHAR(150),
+    `address` TEXT,
+    `phone_landline` VARCHAR(50),
+    `phone_mobile` VARCHAR(50),
+    `email` VARCHAR(100),
+    `fax` VARCHAR(50),
+    `note` TEXT,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Tags Table
+CREATE TABLE IF NOT EXISTS `tags` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `name` VARCHAR(50) NOT NULL,
+    `color` VARCHAR(7) DEFAULT '#000000',
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Contact Tags Relation
+CREATE TABLE IF NOT EXISTS `contact_tags` (
+    `contact_id` INT NOT NULL,
+    `tag_id` INT NOT NULL,
+    PRIMARY KEY (`contact_id`, `tag_id`),
+    FOREIGN KEY (`contact_id`) REFERENCES `contacts`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Custom Field Definitions
+CREATE TABLE IF NOT EXISTS `custom_field_definitions` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `field_name` VARCHAR(100) NOT NULL,
+    `field_type` ENUM('text', 'date', 'number') DEFAULT 'text',
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Custom Field Values
+CREATE TABLE IF NOT EXISTS `custom_field_values` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `contact_id` INT NOT NULL,
+    `field_def_id` INT NOT NULL,
+    `field_value` TEXT,
+    FOREIGN KEY (`contact_id`) REFERENCES `contacts`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`field_def_id`) REFERENCES `custom_field_definitions`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Default Admin
 INSERT IGNORE INTO `users` (`username`, `password`, `role`, `first_name`, `last_name`, `email`) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'System', 'Admin', 'admin@logistics.com');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `offices`
---
-
-CREATE TABLE IF NOT EXISTS `offices` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `location_name` varchar(100) NOT NULL,
-  `address` text NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `shipments`
---
-
-CREATE TABLE IF NOT EXISTS `shipments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sender_id` int(11) NOT NULL,
-  `receiver_id` int(11) DEFAULT NULL,
-  `receiver_name` varchar(100) DEFAULT NULL, -- For cases where receiver is not a registered user yet, optional
-  `receiver_phone` varchar(20) DEFAULT NULL,
-  `from_office_id` int(11) DEFAULT NULL, -- Sent from office
-  `from_address` text DEFAULT NULL, -- Picked up from address (optional extension)
-  `to_office_id` int(11) DEFAULT NULL, -- Delivery to office
-  `to_address` text DEFAULT NULL, -- Delivery to address
-  `weight` decimal(10,2) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `status` enum('registered','in_transit','delivered','canceled') NOT NULL DEFAULT 'registered',
-  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `date_delivered` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `sender_id` (`sender_id`),
-  KEY `receiver_id` (`receiver_id`),
-  KEY `from_office_id` (`from_office_id`),
-  KEY `to_office_id` (`to_office_id`),
-  CONSTRAINT `shipments_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `shipments_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `shipments_ibfk_3` FOREIGN KEY (`from_office_id`) REFERENCES `offices` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `shipments_ibfk_4` FOREIGN KEY (`to_office_id`) REFERENCES `offices` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'System', 'Admin', 'admin@addressbook.com');
