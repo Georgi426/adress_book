@@ -1,9 +1,10 @@
--- Database: `logistics_company` (renamed to Address Book context effectively)
+-- База данни: `logistics_company`
 
-CREATE DATABASE IF NOT EXISTS `logistics_company` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `logistics_company`;
+-- CREATE DATABASE IF NOT EXISTS `logistics_company` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+-- USE `logistics_company`;
 
--- Users Table
+
+-- Таблица за Потребители (Users)
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Contacts Table
+-- Таблица за Контакти (Contacts)
 CREATE TABLE IF NOT EXISTS `contacts` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Tags Table
+-- Таблица за Етикети (Tags)
 CREATE TABLE IF NOT EXISTS `tags` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
@@ -42,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Contact Tags Relation
+-- Свързваща таблица Контакти-Етикети (Contact Tags Relation)
 CREATE TABLE IF NOT EXISTS `contact_tags` (
     `contact_id` INT NOT NULL,
     `tag_id` INT NOT NULL,
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `contact_tags` (
     FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Custom Field Definitions
+-- Дефиниции на допълнителни полета (Custom Field Definitions)
 CREATE TABLE IF NOT EXISTS `custom_field_definitions` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
@@ -60,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `custom_field_definitions` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Custom Field Values
+-- Стойности на допълнителни полета (Custom Field Values)
 CREATE TABLE IF NOT EXISTS `custom_field_values` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `contact_id` INT NOT NULL,
@@ -70,11 +71,11 @@ CREATE TABLE IF NOT EXISTS `custom_field_values` (
     FOREIGN KEY (`field_def_id`) REFERENCES `custom_field_definitions`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Default Admin
+-- Администратор по подразбиране (Default Admin)
 INSERT IGNORE INTO `users` (`username`, `password`, `role`, `first_name`, `last_name`, `email`) VALUES
 ('admin', 'admin', 'admin', 'System', 'Admin', 'admin@addressbook.com');
 
--- Trigger to protect admin
+-- Тригер за защита на администратора (Trigger to protect admin)
 DROP TRIGGER IF EXISTS `prevent_admin_delete`;
 DELIMITER //
 CREATE TRIGGER `prevent_admin_delete`
@@ -82,7 +83,7 @@ BEFORE DELETE ON `users`
 FOR EACH ROW
 BEGIN
     IF OLD.username = 'admin' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete admin user! This account is protected.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Не може да изтриете администратора! Този акаунт е защитен.';
     END IF;
 END;
 //

@@ -1,5 +1,5 @@
 <?php
-// tags.php
+
 require_once 'layouts/header.php';
 require_once 'classes/Tag.php';
 
@@ -11,22 +11,31 @@ if (!isset($_SESSION['user_id'])) {
 $tagObj = new Tag($pdo);
 $message = '';
 
-// Handle Create/Update/Delete
+// 2. ОБРАБОТКА НА ЗАЯВКИ (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // СЛУЧАЙ А: ИЗТРИВАНЕ НА ЕТИКЕТ
+    // Ако във формата има поле 'delete_id', значи потребителят е натиснал бутона "Изтрий" (X)
     if (isset($_POST['delete_id'])) {
         if ($tagObj->delete($_POST['delete_id'], $_SESSION['user_id'])) {
             $message = "Етикетът е изтрит успешно.";
         }
-    } else {
-        $name = trim($_POST['name']);
-        $color = $_POST['color'];
+    }
+    // СЛУЧАЙ Б: СЪЗДАВАНЕ ИЛИ РЕДАКЦИЯ
+    else {
+        $name = trim($_POST['name']); // Изчистваме празните места
+        $color = $_POST['color'];     // Цвета идва от <input type="color">
 
         if (!empty($name)) {
+            // Проверяваме дали имаме ID. Ако има -> РЕДАКЦИЯ на съществуващ запис.
+            // Това ID се попълва от JavaScript функцията editTag() при клик на бутон "Редакция".
             if (isset($_POST['id']) && !empty($_POST['id'])) {
                 if ($tagObj->update($_POST['id'], $_SESSION['user_id'], $name, $color)) {
                     $message = "Етикетът е обновен.";
                 }
-            } else {
+            }
+            // Ако няма ID --> СЪЗДАВАНЕ на нов запис.
+            else {
                 if ($tagObj->create($_SESSION['user_id'], $name, $color)) {
                     $message = "Етикетът е добавен.";
                 }
@@ -35,6 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// 3. ЗАРЕЖДАНЕ НА ДАННИ
+// Извличаме всички етикети на текущия потребител, за да ги покажем в таблицата долу.
 $tags = $tagObj->getAll($_SESSION['user_id']);
 ?>
 
@@ -45,11 +56,15 @@ $tags = $tagObj->getAll($_SESSION['user_id']);
 <?php endif; ?>
 
 <div class="row">
+    <!-- ЛЯВА КОЛОНА: ФОРМА ЗА ДОБАВЯНЕ/РЕДАКЦИЯ -->
     <div class="col-6">
         <div class="card" style="padding: 15px; border: 1px solid #ddd;">
             <h3>Добави / Редактирай Етикет</h3>
+
+
             <form method="POST" action="tags.php">
                 <input type="hidden" name="id" id="tag_id">
+
                 <div class="form-group">
                     <label>Име на етикет</label>
                     <input type="text" name="name" id="tag_name" class="form-control" required>
@@ -58,6 +73,7 @@ $tags = $tagObj->getAll($_SESSION['user_id']);
                     <label>Цвят</label>
                     <input type="color" name="color" id="tag_color" class="form-control" style="height: 40px;" value="#3498db">
                 </div>
+
                 <button type="submit" class="btn btn-primary" id="save_btn">Запази</button>
                 <button type="button" class="btn btn-secondary" onclick="resetForm()" style="display:none;" id="cancel_btn">Отказ</button>
             </form>
@@ -84,6 +100,8 @@ $tags = $tagObj->getAll($_SESSION['user_id']);
                             <td style="padding: 10px; font-weight: bold;"><?= htmlspecialchars($tag['name']) ?></td>
                             <td style="padding: 10px; text-align: right;">
                                 <button class="btn btn-sm btn-info" onclick="editTag(<?= $tag['id'] ?>, '<?= htmlspecialchars($tag['name']) ?>', '<?= $tag['color'] ?>')">Редакция</button>
+
+                                <!-- Форма за изтриване с потвърждение -->
                                 <form method="POST" action="tags.php" style="display:inline;" onsubmit="return confirm('Сигурни ли сте?')">
                                     <input type="hidden" name="delete_id" value="<?= $tag['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-danger">X</button>
@@ -97,15 +115,20 @@ $tags = $tagObj->getAll($_SESSION['user_id']);
     </div>
 </div>
 
+<!-- JAVASCRIPT ЛОГИКА ЗА UI -->
 <script>
+    // Функция: Подготвя формата за РЕДАКЦИЯ
+    // Взима данните от реда в таблицата и ги слага в полетата на формата.
     function editTag(id, name, color) {
-        document.getElementById('tag_id').value = id;
+        document.getElementById('tag_id').value = id; // Задаваме ID, за да знае PHP кой запис да промени
         document.getElementById('tag_name').value = name;
         document.getElementById('tag_color').value = color;
+
+        // Променяме текста на бутона и показваме бутона "Отказ"
         document.getElementById('save_btn').innerText = 'Обнови';
         document.getElementById('cancel_btn').style.display = 'inline-block';
     }
-
+    // Функция: Изчиства формата (връща я в режим СЪЗДАВАНЕ)
     function resetForm() {
         document.getElementById('tag_id').value = '';
         document.getElementById('tag_name').value = '';

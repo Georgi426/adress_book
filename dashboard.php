@@ -1,18 +1,25 @@
 <?php
-// dashboard.php
+
+
+// Включване на необходимите файлове
 require_once 'layouts/header.php';
 require_once 'classes/Contact.php';
 require_once 'classes/Tag.php';
 
+// Проверка за автентикация (ако няма сесия -> към логин)
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
+// Инициализиране на обектите за база данни
 $contactObj = new Contact($pdo);
 $tagObj = new Tag($pdo);
 
+// Вземане на дума за търсене от URL параметрите (ако има)
 $search = $_GET['search'] ?? null;
+
+// Извличане на контактите за текущия потребител (с филтър ако има търсене)
 $contacts = $contactObj->getAll($_SESSION['user_id'], $search);
 ?>
 
@@ -25,9 +32,11 @@ $contacts = $contactObj->getAll($_SESSION['user_id'], $search);
     </div>
 </div>
 
+<!-- Форма за търсене -->
 <form method="GET" action="dashboard.php" style="margin-bottom: 20px; display: flex; gap: 10px;">
     <input type="text" name="search" class="form-control" placeholder="Търсене по име, фирма, email..." value="<?= htmlspecialchars($search ?? '') ?>" style="flex:1;">
     <button type="submit" class="btn btn-secondary">Търси</button>
+    <!-- Бутон за изчистване на търсенето (показва се само ако има търсене) -->
     <?php if ($search): ?>
         <a href="dashboard.php" class="btn btn-danger">Изчисти</a>
     <?php endif; ?>
@@ -36,20 +45,24 @@ $contacts = $contactObj->getAll($_SESSION['user_id'], $search);
 <?php if (empty($contacts)): ?>
     <p>Няма намерени контакти. Добавете първия си контакт!</p>
 <?php else: ?>
+    <!-- Решетка с карти за контакти -->
     <div class="row">
         <?php foreach ($contacts as $contact): ?>
             <?php
+            // Вземане на етикетите за конкретния контакт
             $tags = $contactObj->getTags($contact['id']);
             ?>
             <div class="col-4" style="margin-bottom: 20px;">
                 <div class="card" style="padding: 15px; border: 1px solid #ddd; height: 100%;">
                     <h3 style="margin-top: 0;">
+                        <!-- Две имена -->
                         <?= htmlspecialchars($contact['first_name'] . ' ' . $contact['last_name']) ?>
                     </h3>
                     <?php if ($contact['company_name']): ?>
                         <p style="color: #666; font-style: italic;"><?= htmlspecialchars($contact['company_name']) ?></p>
                     <?php endif; ?>
 
+                    <!-- Визуализация на етикетите като цветни значки -->
                     <div style="margin: 10px 0;">
                         <?php foreach ($tags as $tag): ?>
                             <span style="background-color: <?= $tag['color'] ?>; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">
@@ -61,8 +74,10 @@ $contacts = $contactObj->getAll($_SESSION['user_id'], $search);
                     <p><i class="fas fa-envelope"></i> <?= htmlspecialchars($contact['email'] ?? 'N/A') ?></p>
                     <p><i class="fas fa-phone"></i> <?= htmlspecialchars($contact['phone_mobile'] ?? 'N/A') ?></p>
 
+                    <!-- Бутони за действие -->
                     <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; text-align: right;">
                         <a href="contact_edit.php?id=<?= $contact['id'] ?>" class="btn btn-sm btn-info">Редакция</a>
+                        <!-- предотвратява случайно изтриване -->
                         <a href="contact_delete.php?id=<?= $contact['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Сигурни ли сте?')">Изтрий</a>
                     </div>
                 </div>

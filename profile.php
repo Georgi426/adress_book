@@ -1,7 +1,7 @@
 <?php
-// profile.php
 require_once 'layouts/header.php';
 require_once 'classes/User.php';
+
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -12,24 +12,26 @@ $userObj = new User($pdo);
 $message = '';
 $error = '';
 
+// Извличане на текущите данни на потребителя
 $user = $userObj->getUserById($_SESSION['user_id']);
 
+// Обработка на формата за редакция
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
-
-    // Optional password change could be here too, but keeping it simple as per requirements (6.2)
-
+    // Валидация на задължителните полета
     if (empty($first_name) || empty($last_name)) {
         $error = "Името и Фамилията са задължителни.";
     } else {
+        // Опит за обновяване на данните в базата
         if ($userObj->update($_SESSION['user_id'], $first_name, $last_name, $email)) {
             $message = "Профилът е обновен успешно.";
-            // Update session
+            // Обновяване на информацията в сесията, за да се отрази веднага в хедъра
             $_SESSION['first_name'] = $first_name;
             $_SESSION['last_name'] = $last_name;
-            $user = $userObj->getUserById($_SESSION['user_id']); // refresh
+            // Презареждане на данните за попълване на формата
+            $user = $userObj->getUserById($_SESSION['user_id']);
         } else {
             $error = "Възникна грешка при обновяването.";
         }

@@ -1,5 +1,4 @@
 <?php
-// custom_fields.php
 require_once 'layouts/header.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -9,29 +8,32 @@ if (!isset($_SESSION['user_id'])) {
 
 $message = '';
 
-// Handle Create/Delete
+// Обработка на действията: Създаване или Изтриване на поле
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Изтриване
     if (isset($_POST['delete_id'])) {
-        $stmt = $pdo->prepare("DELETE FROM custom_field_definitions WHERE id = ? AND user_id = ?");
-        if ($stmt->execute([$_POST['delete_id'], $_SESSION['user_id']])) {
+        // Изтриваме дефиницията на полето (свързаните стойности също ще трябва да се изчистят или се разчита на ON DELETE CASCADE в базата)
+        $stmt = $pdo->prepare("DELETE FROM custom_field_definitions WHERE id = :id AND user_id = :user_id");
+        if ($stmt->execute([':id' => $_POST['delete_id'], ':user_id' => $_SESSION['user_id']])) {
             $message = "Полето е изтрито.";
         }
     } else {
+        // Създаване на ново поле
         $field_name = trim($_POST['field_name']);
         $field_type = $_POST['field_type'];
 
         if (!empty($field_name)) {
-            $stmt = $pdo->prepare("INSERT INTO custom_field_definitions (user_id, field_name, field_type) VALUES (?, ?, ?)");
-            if ($stmt->execute([$_SESSION['user_id'], $field_name, $field_type])) {
+            $stmt = $pdo->prepare("INSERT INTO custom_field_definitions (user_id, field_name, field_type) VALUES (:user_id, :field_name, :field_type)");
+            if ($stmt->execute([':user_id' => $_SESSION['user_id'], ':field_name' => $field_name, ':field_type' => $field_type])) {
                 $message = "Полето е добавено.";
             }
         }
     }
 }
 
-// Fetch existing fields
-$stmt = $pdo->prepare("SELECT * FROM custom_field_definitions WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
+// Извличане на съществуващите полета за показване в списъка
+$stmt = $pdo->prepare("SELECT * FROM custom_field_definitions WHERE user_id = :user_id");
+$stmt->execute([':user_id' => $_SESSION['user_id']]);
 $fields = $stmt->fetchAll();
 ?>
 

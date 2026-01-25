@@ -1,8 +1,11 @@
 <?php
-// layouts/header.php
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Включване на конфигурацията за базата данни.
+// Използваме __DIR__ за да сме сигурни, че пътят е верен спрямо текущия файл.
 require_once __DIR__ . '/../config/db.php';
 ?>
 <!DOCTYPE html>
@@ -11,9 +14,10 @@ require_once __DIR__ . '/../config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Логистична Компания</title>
+    <title>Address Book</title>
     <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
-    <!-- FontAwesome for icons -->
+
+    <!-- FontAwesome: Библиотека за икони (използва се за бутоните и менютата) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
@@ -23,12 +27,17 @@ require_once __DIR__ . '/../config/db.php';
             <div class="logo">
                 <a href="index.php"><i class="fas fa-address-book"></i> Address Book</a>
             </div>
+
+            <!-- Бутон за мобилно меню -->
             <div class="menu-toggle" onclick="toggleMenu()">
                 <i class="fas fa-bars"></i>
             </div>
+
+            <!-- Навигационно меню -->
             <nav id="nav-menu">
                 <ul>
                     <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Меню за логнати потребители -->
                         <li><a href="dashboard.php">Контакти</a></li>
                         <li><a href="tags.php">Етикети</a></li>
                         <li><a href="custom_fields.php">Полета</a></li>
@@ -36,6 +45,7 @@ require_once __DIR__ . '/../config/db.php';
                         <li><a href="profile.php">Профил</a></li>
                         <li><a href="logout.php">Изход (<?= htmlspecialchars($_SESSION['username']) ?>)</a></li>
                     <?php else: ?>
+                        <!-- Меню за гости (нелогнати) -->
                         <li><a href="login.php">Вход</a></li>
                         <li><a href="register.php">Регистрация</a></li>
                     <?php endif; ?>
@@ -43,9 +53,9 @@ require_once __DIR__ . '/../config/db.php';
             </nav>
         </div>
     </header>
+    <!-- Основен контейнер за съдържанието, което ще се зареди в отделните страници -->
     <main class="container">
-        <!-- Main content start -->
-
+        <!-- Скрипт за превключване на мобилното меню -->
         <script>
             function toggleMenu() {
                 var nav = document.getElementById('nav-menu');

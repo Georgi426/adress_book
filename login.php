@@ -1,5 +1,5 @@
 <?php
-// login.php
+
 require_once 'layouts/header.php';
 require_once 'classes/User.php';
 
@@ -10,6 +10,7 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 
+// Обработка на формата при изпращане (POST заявка)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
@@ -18,15 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $userObj->login($username, $password);
 
     if ($user) {
+        // Успешен вход -> запазване на данни в сесията
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
         $_SESSION['first_name'] = $user['first_name'];
         $_SESSION['last_name'] = $user['last_name'];
 
+        // Пренасочване към основната страница
         header("Location: dashboard.php");
         exit;
     } else {
+        // Неуспешен вход -> показване на грешка
         $error = "Невалидно потребителско име или парола.";
     }
 }
