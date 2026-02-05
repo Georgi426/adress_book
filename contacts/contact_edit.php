@@ -1,13 +1,13 @@
 <?php
 
 
-require_once 'layouts/header.php';
-require_once 'classes/Contact.php';
-require_once 'classes/Tag.php';
+require_once '../layouts/header.php';
+require_once '../classes/Contact.php';
+require_once '../classes/Tag.php';
 
 // Проверка за автентикация: Ако потребителят не е влязъл в системата (няма сесия), го пренасочваме към страницата за вход (login.php).
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 // Инициализиране на обектите за връзка с базата данни
@@ -34,7 +34,7 @@ if ($id) {
     // Ако контактът не е намерен (или не принадлежи на потребителя)
     if (!$contact) {
         echo "Контактът не е намерен.";
-        require_once 'layouts/footer.php';
+        require_once '../layouts/footer.php';
         exit;
     }
     // Ако контактът е намерен, зареждаме и неговите етикети (Tags)
@@ -266,4 +266,4 @@ if ($id && empty($error)) { // Зареждаме ги само ако е ред
     <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Запази Контакта</button>
 </form>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

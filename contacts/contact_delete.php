@@ -1,6 +1,6 @@
 <?php
-require_once 'config/db.php';
-require_once 'classes/Contact.php';
+require_once '../config/db.php';
+require_once '../classes/Contact.php';
 
 session_start();
 

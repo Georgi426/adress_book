@@ -1,10 +1,10 @@
 <?php
 
-require_once 'layouts/header.php';
-require_once 'classes/Tag.php';
+require_once '../layouts/header.php';
+require_once '../classes/Tag.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 
@@ -137,4 +137,4 @@ $tags = $tagObj->getAll($_SESSION['user_id']);
     }
 </script>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

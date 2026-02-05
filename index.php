@@ -9,9 +9,9 @@ if (session_status() == PHP_SESSION_NONE) {
 // Проверка за активен потребител
 if (isset($_SESSION['user_id'])) {
     // Влезлият потребител отива на Dashboard
-    header("Location: dashboard.php");
+    header("Location: contacts/dashboard.php");
 } else {
     // Гост потребителя отива на Вход
-    header("Location: login.php");
+    header("Location: auth/login.php");
 }
 exit;

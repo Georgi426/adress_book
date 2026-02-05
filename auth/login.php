@@ -1,10 +1,10 @@
 <?php
 
-require_once 'layouts/header.php';
-require_once 'classes/User.php';
+require_once '../layouts/header.php';
+require_once '../classes/User.php';
 
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+    header("Location: ../contacts/dashboard.php");
     exit;
 }
 
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['last_name'] = $user['last_name'];
 
         // Пренасочване към основната страница
-        header("Location: dashboard.php");
+        header("Location: ../contacts/dashboard.php");
         exit;
     } else {
         // Неуспешен вход -> показване на грешка
@@ -59,4 +59,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
 </div>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

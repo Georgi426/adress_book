@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 5. Обновяване на конфигурационния файл `config/db.php` с новите данни
+        // Тъй като install.php е в папка setup/, трябва да запишем в ../config/db.php
         $config_content = "<?php
 // settings updated by install.php
 \$host = '$host';
@@ -86,7 +87,7 @@ try {
 }
 ?>";
         // Запис на новия конфиг файл
-        file_put_contents(__DIR__ . '/config/db.php', $config_content);
+        file_put_contents(__DIR__ . '/../config/db.php', $config_content);
 
         $message = "Инсталацията е успешна! Базата данни е създадена и конфигурирана.";
     } catch (Exception $e) {
@@ -102,7 +103,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book Installation</title>
     <!-- Зареждане на основния CSS файл -->
-    <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= time() ?>">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -124,7 +125,7 @@ try {
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
                     <p style="margin-top: 15px; text-align: center;">
-                        <a href="index.php" class="btn btn-success">Към приложението <i class="fas fa-arrow-right"></i></a>
+                        <a href="../index.php" class="btn btn-success">Към приложението <i class="fas fa-arrow-right"></i></a>
                     </p>
                 </div>
             <?php endif; ?>

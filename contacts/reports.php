@@ -1,11 +1,11 @@
 <?php
 
 
-require_once 'layouts/header.php';
+require_once '../layouts/header.php';
 
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit;
 }
 
@@ -157,4 +157,4 @@ switch ($report_type) {
     <?php endif; ?>
 <?php endif; ?>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

@@ -1,6 +1,6 @@
 <?php
-require_once 'layouts/header.php';
-require_once 'classes/User.php';
+require_once '../layouts/header.php';
+require_once '../classes/User.php';
 
 
 if (!isset($_SESSION['user_id'])) {
@@ -73,4 +73,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit" class="btn btn-primary">Запази Промените</button>
 </form>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>

@@ -1,7 +1,7 @@
 <?php
 
-require_once 'layouts/header.php';
-require_once 'classes/User.php';
+require_once '../layouts/header.php';
+require_once '../classes/User.php';
 
 $message = '';
 $error = '';
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['last_name'] = $user['last_name'];
                 // Пренасочване към Dashboard
-                header("Location: dashboard.php");
+                header("Location: ../contacts/dashboard.php");
                 exit;
             } else {
                 // Теоретично не трябва да се стига до тук
@@ -81,4 +81,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
 </div>
 
-<?php require_once 'layouts/footer.php'; ?>
+<?php require_once '../layouts/footer.php'; ?>
