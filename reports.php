@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Вземане на типа справка от URL параметъра "type" (ако няма, по подразбиране е 'all')
 $report_type = $_GET['type'] ?? 'all';
 $results = [];
 $title = "Справки";

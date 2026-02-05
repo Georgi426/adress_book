@@ -1,7 +1,6 @@
 <?php
 
-// Включване на зависимите файлове
-// 'header.php' зарежда общата структура на страницата (HTML head, навигация)
+
 require_once 'layouts/header.php';
 require_once 'classes/Contact.php';
 require_once 'classes/Tag.php';
@@ -38,7 +37,6 @@ if ($id) {
         require_once 'layouts/footer.php';
         exit;
     }
-
     // Ако контактът е намерен, зареждаме и неговите етикети (Tags)
     $tagsRaw = $contactObj->getTags($id);
     // Преобразуваме масива, за да вземем само ID-тата на етикетите (напр. [1, 5, 8])

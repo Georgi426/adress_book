@@ -1,6 +1,4 @@
 <?php
-// install.php
-// Скрипт за първоначална инсталация на приложението Address Book
 
 $message = '';
 $error = '';
@@ -20,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // 2. Създаване на базата данни (ако не съществува)
-        //    Задаваме UTF8MB4 кодировка за поддръжка на всякакви символи (вкл. емотикони)
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
 
         // 3. Избиране на новосъздадената база данни за работа

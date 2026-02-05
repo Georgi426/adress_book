@@ -1,11 +1,9 @@
 <?php
-// classes/User.php
 
 class User
 {
-    private $pdo; // PDO инстанция за връзка с базата данни
+    private $pdo;
 
-    // Конструктор: Приема PDO обект за работа с базата
     public function __construct($pdo)
     {
         $this->pdo = $pdo;

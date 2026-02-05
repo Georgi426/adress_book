@@ -1,12 +1,12 @@
 <?php
 
 
-// Включване на необходимите файлове
+
 require_once 'layouts/header.php';
 require_once 'classes/Contact.php';
 require_once 'classes/Tag.php';
 
-// Проверка за автентикация (ако няма сесия -> към логин)
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;

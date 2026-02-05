@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 $tagObj = new Tag($pdo);
 $message = '';
 
-// 2. ОБРАБОТКА НА ЗАЯВКИ (POST)
+// 1. ОБРАБОТКА НА ЗАЯВКИ (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // СЛУЧАЙ А: ИЗТРИВАНЕ НА ЕТИКЕТ
