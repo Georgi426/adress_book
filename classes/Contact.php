@@ -100,8 +100,12 @@ class Contact
 
         // Ако има дума за търсене, добавяме условие
         if ($search) {
-            $sql .= " AND (first_name LIKE :search OR last_name LIKE :search OR email LIKE :search OR company_name LIKE :search)";
-            $params[':search'] = "%$search%";
+            $sql .= " AND (first_name LIKE :search1 OR last_name LIKE :search2 OR email LIKE :search3 OR company_name LIKE :search4)";
+            $searchTerm = "%$search%";
+            $params[':search1'] = $searchTerm;
+            $params[':search2'] = $searchTerm;
+            $params[':search3'] = $searchTerm;
+            $params[':search4'] = $searchTerm;
         }
 
         $sql .= " ORDER BY first_name ASC, last_name ASC"; // Сортиране по име

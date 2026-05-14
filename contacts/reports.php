@@ -97,7 +97,8 @@ switch ($report_type) {
     <a href="reports.php?type=tag_stats" class="btn <?= $report_type == 'tag_stats' ? 'btn-primary' : 'btn-secondary' ?>">Статистика Етикети</a>
     <a href="reports.php?type=same_name_diff_last" class="btn <?= $report_type == 'same_name_diff_last' ? 'btn-primary' : 'btn-secondary' ?>">Дублиращи Имена</a>
     <a href="reports.php?type=same_last_diff_name" class="btn <?= $report_type == 'same_last_diff_name' ? 'btn-primary' : 'btn-secondary' ?>">Дублиращи Фамилии</a>
-    <a href="export.php" class="btn btn-info ms-auto" target="_blank">Експорт (CSV/JSON)</a>
+    <a href="export.php?format=csv" class="btn btn-info ms-auto" target="_blank">Експорт CSV</a>
+    <a href="export.php?format=json" class="btn btn-info ms-2" target="_blank">Експорт JSON</a>
 </div>
 
 <!-- Визуализация на резултатите -->

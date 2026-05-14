@@ -9,7 +9,7 @@ class User
         $this->pdo = $pdo;
     }
 
-    // Метод за регистрация на нов потребител
+    //регистрация на нов потребител
     public function register($username, $password, $first_name, $last_name, $email, $role = 'client')
     {
         try {
@@ -30,7 +30,7 @@ class User
         }
     }
 
-    // Метод за вход в системата (Login)
+    //вход в системата
     public function login($username, $password)
     {
         try {
